@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
-const { PORT, DB_URL } = require('./config/config.env');
+// const { PORT, DB_URL } = require('./config/.env');
 const authRoutes = require('./routes/authRoutes');
 const recordRoutes = require('./routes/recordRoutes');
 
@@ -13,7 +13,7 @@ const port = process.env.PORT;
 const dbUrl = process.env.DB_URL;
 const secretKey = process.env.SECRET_KEY;
 
-mongoose.connect(dbUrl, {
+mongoose.connect("mongodb://127.0.0.1:27017/pims_db", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
@@ -30,6 +30,6 @@ app.use(cors());
 app.use('/api/auth', authRoutes);
 app.use('/api/records', recordRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(5000, () => {
+  console.log(`Server is running on port ${5000}`);
 });

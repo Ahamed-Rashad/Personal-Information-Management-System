@@ -2,7 +2,7 @@ const Record = require('../models/Record');
 
 exports.getRecords = async (req, res) => {
   try {
-    const userId = req.user.userId; // Extracted from JWT middleware
+    const userId = req.user.userId; 
     const records = await Record.find({ userId });
     res.status(200).json(records);
   } catch (error) {
@@ -12,10 +12,10 @@ exports.getRecords = async (req, res) => {
 
 exports.createRecord = async (req, res) => {
   const { name, age, email, phoneNumber } = req.body;
-  const userId = req.user.userId; // Extracted from JWT middleware
+  //const userId = req.user.userId; 
   try {
     const record = new Record({
-      userId,
+   
       name,
       age,
       email,
