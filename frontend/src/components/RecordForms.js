@@ -3,7 +3,9 @@ import { TextField, Button, Container, Typography } from '@mui/material';
 import { Add } from '@mui/icons-material';
 import axios from 'axios';
 
-const RecordForms = () => {
+axios.defaults.baseURL = "http://localhost:5000"
+
+const RecordForms = ({ onRecordCreated }) => {
     const [name, setName] = useState('');
     const [age, setAge] = useState('');
     const [email, setEmail] = useState('');
@@ -13,17 +15,22 @@ const RecordForms = () => {
   
     const handleCreateRecord = async () => {
       try {
-        await axios.post('/api/records/create', {
+        const response = await axios.post('/api/records/post', {
           name,
           age,
           email,
           phoneNumber,
         });
-        setSuccessMessage('Record created successfully');
-        setErrorMessage('');
+        if (response.status === 201) {
+          setSuccessMessage('Record created successfully');
+          setErrorMessage('');
+          onRecordCreated(); 
+        } else {
+          
+        }
       } catch (error) {
         setSuccessMessage('');
-        setErrorMessage('Failed to create record');
+        
       }
     };
 

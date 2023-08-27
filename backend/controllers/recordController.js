@@ -2,13 +2,17 @@ const Record = require('../models/Record');
 
 exports.getRecords = async (req, res) => {
   try {
-    const userId = req.user.userId; 
-    const records = await Record.find({ userId });
+    console.log('Fetching all records...');
+    const records = await Record.find();
+    console.log('Fetched records:', records);
     res.status(200).json(records);
   } catch (error) {
+    console.error('Error fetching records:', error);
     res.status(500).json({ error: 'An error occurred' });
   }
 };
+
+
 
 exports.createRecord = async (req, res) => {
   const { name, age, email, phoneNumber } = req.body;

@@ -2,19 +2,31 @@ import React, { useState, useEffect } from "react";
 import {
     Container,
     Typography,
-    List,
-    ListItem,
-    ListItemText,
-    Divider,
     IconButton,
     Button,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    TextField,
 } from "@mui/material";
-import {Add, Edit, Delete } from "@mui/icons-material";
+import { Add, Edit, Delete } from "@mui/icons-material";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import RecordForms from "./RecordForms";
+
 
 const Dashboard = () => {
     const [records, setRecords] = useState([]);
+    const [showRecordForm, setShowRecordForm] = useState(false);
+    const [selectedRecord, setSelectedRecord] = useState(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     useEffect(() => {
         fetchRecords();
@@ -31,51 +43,151 @@ const Dashboard = () => {
 
     const handleDelete = async (recordId) => {
         try {
-            await axios.delete(`/api/records/${recordId}`);
+            await axios.delete(`/api/records/delete/${recordId}`);
             fetchRecords();
         } catch (error) {
             console.error("Error deleting record:", error);
         }
     };
 
+    const handleEdit = (record) => {
+        setSelectedRecord(record);
+        setIsDialogOpen(true);
+    };
+
+    const handleCloseDialog = () => {
+        setIsDialogOpen(false);
+        setSelectedRecord(null);
+    };
+
+    const handleUpdate = async () => {
+        try {
+            await axios.put(`/api/records/update/${selectedRecord._id}`, selectedRecord);
+            fetchRecords();
+            handleCloseDialog();
+        } catch (error) {
+            console.error("Error updating record:", error);
+        }
+    };
+
+    
+
     return (
-        <Container maxWidth="sm">
-            <Typography variant="h4">Dashboard</Typography>
-            <Button
-        variant="contained"
-        startIcon={<Add />}
-        component={Link}
-        to="/records"
-      >
-        Add User
-      </Button>
-            <List>
-                {records.map((record) => (
-                    <React.Fragment key={record._id}>
-                        <ListItem>
-                            <ListItemText primary={`Name: ${record.name}`} />
-                            <ListItemText primary={`Age: ${record.age}`} />
-                            <ListItemText primary={`Email: ${record.email}`} />
-                            <ListItemText primary={`Phone Number: ${record.phoneNumber}`} />
-                            <Link
-                                to={`/records/edit/${record._id}`}
-                                style={{ textDecoration: "none" }}
-                            >
-                                <IconButton color="primary">
-                                    <Edit />
-                                </IconButton>
-                            </Link>
-                            <IconButton
-                                color="secondary"
-                                onClick={() => handleDelete(record._id)}
-                            >
-                                <Delete />
-                            </IconButton>
-                        </ListItem>
-                        <Divider />
-                    </React.Fragment>
-                ))}
-            </List>
+        <Container maxWidth="lg">
+            <Typography variant="h4" gutterBottom>
+                Dashboard
+            </Typography>
+            {showRecordForm ? (
+                <RecordForms
+                    onCancel={() => setShowRecordForm(false)}
+                    selectedRecord={selectedRecord}
+                    onUpdate={() => {
+                        setShowRecordForm(false);
+                        fetchRecords();
+                    }}
+                />
+            ) : (
+                <Button
+                    variant="contained"
+                    startIcon={<Add />}
+                    onClick={() => setShowRecordForm(true)}
+                >
+                    Add User
+                </Button>
+            )}
+
+            <TableContainer component={Paper} style={{ marginTop: 20 }}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Name</TableCell>
+                            <TableCell>Age</TableCell>
+                            <TableCell>Email</TableCell>
+                            <TableCell>Phone Number</TableCell>
+                            <TableCell>Edit</TableCell>
+                            <TableCell>Delete</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {records.map((record) => (
+                            <TableRow key={record._id}>
+                                <TableCell>{record.name}</TableCell>
+                                <TableCell>{record.age}</TableCell>
+                                <TableCell>{record.email}</TableCell>
+                                <TableCell>{record.phoneNumber}</TableCell>
+                                <TableCell>
+                                    <IconButton color="primary" onClick={() => handleEdit(record)}>
+                                        <Edit />
+                                    </IconButton>
+                                </TableCell>
+                                <TableCell>
+                                    <IconButton
+                                        color="secondary"
+                                        onClick={() => handleDelete(record._id)}
+                                    >
+                                        <Delete />
+                                    </IconButton>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+
+            <Dialog open={isDialogOpen} onClose={handleCloseDialog} maxWidth="sm">
+                <DialogTitle>Edit User</DialogTitle>
+                <DialogContent>
+                    {selectedRecord && (
+                        <form>
+                            <TextField
+                                label="Name"
+                                value={selectedRecord.name}
+                                onChange={(e) =>
+                                    setSelectedRecord({ ...selectedRecord, name: e.target.value })
+                                }
+                                fullWidth
+                                margin="normal"
+                            />
+                            <TextField
+                                label="Age"
+                                value={selectedRecord.age}
+                                onChange={(e) =>
+                                    setSelectedRecord({ ...selectedRecord, age: e.target.value })
+                                }
+                                fullWidth
+                                margin="normal"
+                            />
+                            <TextField
+                                label="Email"
+                                value={selectedRecord.email}
+                                onChange={(e) =>
+                                    setSelectedRecord({ ...selectedRecord, email: e.target.value })
+                                }
+                                fullWidth
+                                margin="normal"
+                            />
+                            <TextField
+                                label="Phone Number"
+                                value={selectedRecord.phoneNumber}
+                                onChange={(e) =>
+                                    setSelectedRecord({
+                                        ...selectedRecord,
+                                        phoneNumber: e.target.value,
+                                    })
+                                }
+                                fullWidth
+                                margin="normal"
+                            />
+                        </form>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog}>Cancel</Button>
+                    <Button onClick={handleUpdate} variant="contained" color="primary">
+                        Update
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 };
