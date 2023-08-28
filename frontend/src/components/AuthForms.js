@@ -28,6 +28,7 @@ const AuthForms = () => {
     try {
       await axios.post('/api/auth/register', { username: registerUsername, password: registerPassword });
       setSuccessMessage('Registration successful');
+      handleRegisterClose();
     } catch (error) {
       setErrorMessage('Registration failed');
     }
@@ -47,7 +48,7 @@ const AuthForms = () => {
   return (
     <div>
       <Box display="flex" flexDirection="column" alignItems="center" p={3}>
-        <Typography variant="h4">Login</Typography>
+        {/* <Typography variant="h4">Login</Typography> */}
         {!loggedIn && (
           <>
             <TextField

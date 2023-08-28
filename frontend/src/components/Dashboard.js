@@ -41,6 +41,10 @@ const Dashboard = () => {
         }
     };
 
+    const handleRecordCreated = () => {
+        fetchRecords(); // Fetch records to update the list
+    };
+
     const handleDelete = async (recordId) => {
         try {
             await axios.delete(`/api/records/delete/${recordId}`);
@@ -79,6 +83,7 @@ const Dashboard = () => {
             </Typography>
             {showRecordForm ? (
                 <RecordForms
+                    onRecordCreated={handleRecordCreated}
                     onCancel={() => setShowRecordForm(false)}
                     selectedRecord={selectedRecord}
                     onUpdate={() => {

@@ -25,14 +25,22 @@ const RecordForms = ({ onRecordCreated }) => {
           setSuccessMessage('Record created successfully');
           setErrorMessage('');
           onRecordCreated(); 
-        } else {
+
+          setName('');
+          setAge('');
+          setEmail('');
+          setPhoneNumber('');
           
+        } else {
+          onRecordCreated();
         }
       } catch (error) {
         setSuccessMessage('');
-        
+        onRecordCreated();
       }
     };
+
+   
 
   return (
     <Container maxWidth="sm">
@@ -77,6 +85,7 @@ const RecordForms = ({ onRecordCreated }) => {
         variant="contained"
         startIcon={<Add />}
         onClick={handleCreateRecord}
+        
       >
         Create Record
       </Button>
